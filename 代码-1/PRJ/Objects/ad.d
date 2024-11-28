@@ -1,0 +1,17 @@
+.\objects\ad.o: ..\BSP\AD.c
+.\objects\ad.o: ..\CMSIS\stm32f10x.h
+.\objects\ad.o: ..\CMSIS\core_cm3.h
+.\objects\ad.o: D:\keil5(4)\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\ad.o: ..\CMSIS\system_stm32f10x.h
+.\objects\ad.o: ..\APP\stm32f10x_conf.h
+.\objects\ad.o: D:\keil5(4)\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\ad.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_gpio.h
+.\objects\ad.o: ..\CMSIS\stm32f10x.h
+.\objects\ad.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_rcc.h
+.\objects\ad.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_usart.h
+.\objects\ad.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\misc.h
+.\objects\ad.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_adc.h
+.\objects\ad.o: ..\BSP\Buzzer.h
+.\objects\ad.o: ..\MPU6050\sys.h
+.\objects\ad.o: ..\DRIVERS\Delay.h
+.\objects\ad.o: ..\BSP\OLED.h

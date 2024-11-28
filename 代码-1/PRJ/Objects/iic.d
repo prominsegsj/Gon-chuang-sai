@@ -1,0 +1,15 @@
+.\objects\iic.o: ..\BSP\IIC.c
+.\objects\iic.o: ..\BSP\IIC.h
+.\objects\iic.o: ..\MPU6050\sys.h
+.\objects\iic.o: ..\CMSIS\stm32f10x.h
+.\objects\iic.o: ..\CMSIS\core_cm3.h
+.\objects\iic.o: D:\keil5(4)\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\iic.o: ..\CMSIS\system_stm32f10x.h
+.\objects\iic.o: ..\APP\stm32f10x_conf.h
+.\objects\iic.o: D:\keil5(4)\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\iic.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_gpio.h
+.\objects\iic.o: ..\CMSIS\stm32f10x.h
+.\objects\iic.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_rcc.h
+.\objects\iic.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_usart.h
+.\objects\iic.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\misc.h
+.\objects\iic.o: ..\DRIVERS\delay.h

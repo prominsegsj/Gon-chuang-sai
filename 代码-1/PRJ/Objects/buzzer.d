@@ -1,0 +1,15 @@
+.\objects\buzzer.o: ..\BSP\Buzzer.c
+.\objects\buzzer.o: ..\CMSIS\stm32f10x.h
+.\objects\buzzer.o: ..\CMSIS\core_cm3.h
+.\objects\buzzer.o: D:\keil5(4)\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\buzzer.o: ..\CMSIS\system_stm32f10x.h
+.\objects\buzzer.o: ..\APP\stm32f10x_conf.h
+.\objects\buzzer.o: D:\keil5(4)\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\buzzer.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_gpio.h
+.\objects\buzzer.o: ..\CMSIS\stm32f10x.h
+.\objects\buzzer.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_rcc.h
+.\objects\buzzer.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_usart.h
+.\objects\buzzer.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\misc.h
+.\objects\buzzer.o: ..\DRIVERS\Delay.h
+.\objects\buzzer.o: ..\BSP\Buzzer.h
+.\objects\buzzer.o: ..\MPU6050\sys.h

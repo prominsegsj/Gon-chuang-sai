@@ -1,0 +1,14 @@
+.\objects\mpu6050_iic.o: ..\MPU6050\MPU6050_IIC.c
+.\objects\mpu6050_iic.o: ..\CMSIS\stm32f10x.h
+.\objects\mpu6050_iic.o: ..\CMSIS\core_cm3.h
+.\objects\mpu6050_iic.o: D:\keil5(4)\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\mpu6050_iic.o: ..\CMSIS\system_stm32f10x.h
+.\objects\mpu6050_iic.o: ..\APP\stm32f10x_conf.h
+.\objects\mpu6050_iic.o: D:\keil5(4)\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\mpu6050_iic.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_gpio.h
+.\objects\mpu6050_iic.o: ..\CMSIS\stm32f10x.h
+.\objects\mpu6050_iic.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_rcc.h
+.\objects\mpu6050_iic.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_usart.h
+.\objects\mpu6050_iic.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\misc.h
+.\objects\mpu6050_iic.o: ..\MPU6050\sys.h
+.\objects\mpu6050_iic.o: ..\DRIVERS\Delay.h

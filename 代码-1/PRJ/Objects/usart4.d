@@ -1,0 +1,17 @@
+.\objects\usart4.o: ..\BSP\USART4.c
+.\objects\usart4.o: ..\CMSIS\stm32f10x.h
+.\objects\usart4.o: ..\CMSIS\core_cm3.h
+.\objects\usart4.o: D:\keil5(4)\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\usart4.o: ..\CMSIS\system_stm32f10x.h
+.\objects\usart4.o: ..\APP\stm32f10x_conf.h
+.\objects\usart4.o: D:\keil5(4)\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\usart4.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_gpio.h
+.\objects\usart4.o: ..\CMSIS\stm32f10x.h
+.\objects\usart4.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_rcc.h
+.\objects\usart4.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_usart.h
+.\objects\usart4.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\misc.h
+.\objects\usart4.o: ..\BSP\USART4.h
+.\objects\usart4.o: D:\keil5(4)\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\usart4.o: D:\keil5(4)\ARM\ARMCC\Bin\..\include\string.h
+.\objects\usart4.o: D:\keil5(4)\ARM\ARMCC\Bin\..\include\stdarg.h
+.\objects\usart4.o: D:\keil5(4)\ARM\ARMCC\Bin\..\include\stddef.h

@@ -1,0 +1,16 @@
+.\objects\mpuiic.o: ..\MPU6050\mpuiic.c
+.\objects\mpuiic.o: ..\CMSIS\stm32f10x.h
+.\objects\mpuiic.o: ..\CMSIS\core_cm3.h
+.\objects\mpuiic.o: D:\keil5(4)\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\mpuiic.o: ..\CMSIS\system_stm32f10x.h
+.\objects\mpuiic.o: ..\APP\stm32f10x_conf.h
+.\objects\mpuiic.o: D:\keil5(4)\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\mpuiic.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_gpio.h
+.\objects\mpuiic.o: ..\CMSIS\stm32f10x.h
+.\objects\mpuiic.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_rcc.h
+.\objects\mpuiic.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_usart.h
+.\objects\mpuiic.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\misc.h
+.\objects\mpuiic.o: ..\MPU6050\mpuiic.h
+.\objects\mpuiic.o: ..\MPU6050\sys.h
+.\objects\mpuiic.o: ..\DRIVERS\Delay.h
+.\objects\mpuiic.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_exti.h

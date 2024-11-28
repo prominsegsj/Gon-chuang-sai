@@ -1,0 +1,13 @@
+.\objects\sys.o: ..\MPU6050\sys.c
+.\objects\sys.o: ..\MPU6050\sys.h
+.\objects\sys.o: ..\CMSIS\stm32f10x.h
+.\objects\sys.o: ..\CMSIS\core_cm3.h
+.\objects\sys.o: D:\keil5(4)\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\sys.o: ..\CMSIS\system_stm32f10x.h
+.\objects\sys.o: ..\APP\stm32f10x_conf.h
+.\objects\sys.o: D:\keil5(4)\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\sys.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_gpio.h
+.\objects\sys.o: ..\CMSIS\stm32f10x.h
+.\objects\sys.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_rcc.h
+.\objects\sys.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_usart.h
+.\objects\sys.o: ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\misc.h
