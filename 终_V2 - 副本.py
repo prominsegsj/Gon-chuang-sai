@@ -14,13 +14,13 @@ uart = UART(3, 9600)
 # 颜色阈值（根据实际情况进行调整）
 thresholds = {
     "Red":(0, 55, 41, 127, -128, 127),  # generic_red_thresholds
-    "Green":(0, 57, -128, -14, -128, 127),  # generic_green_thresholds
+    "Green":(46, 72, -128, -52, -128, 127),  # generic_green_thresholds
     "Blue":(0, 60, 4, 127, -128, -26),
 }  # generic_blue_thresholds
 
 # 存储识别到的圆心坐标
 circle_centers = []
-MAX_CIRCLE_COUNT = 30  # 存储最多40次识别到的圆心
+MAX_CIRCLE_COUNT = 20  # 存储最多20次识别到的圆心
 
 # 计算平均值
 def calculate_average(centers):
@@ -165,8 +165,8 @@ while True:
                             # 圆环识别代码
                             print('Ring OK')
 
-                # 检查是否超时，10秒为最大时间
-                if time.time() - start_time > 10:  # 超过10秒则结束并发送失败信号
+                # 检查是否超时，5秒为最大时间
+                if time.time() - start_time > 5:  # 超过5秒则结束并发送失败信号
                     print("超时未成功识别圆环")
                     uart.write(bytearray([0xee, 0, 6, 0xfe]))  # 发送字节 6 表示超时失败
                     ring_identified=True    # 强制跳出识别循环

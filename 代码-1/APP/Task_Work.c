@@ -38,6 +38,9 @@ uint8_t Order_Color_2[3]={0};
 //机械臂部分
 extern uint8_t Servo_Flag;
 
+//任务运动部分
+uint8_t Car_D=2;
+
 void Set_Go(uint8_t Order,float Pos,uint8_t Angle,uint16_t V,uint8_t Acc)
 {
 
@@ -352,6 +355,7 @@ void Task_Catch_Work(uint8_t Command)
 					if(Color_Data[0]==Order_Color_2[a])
 					{
 						runActionGroup(3+a,1);
+						runActionGroup(2,1);												
 						break;
 					}
 					else 
@@ -384,26 +388,56 @@ void Put(uint8_t Command)
 	}
 }
 
-void Catch(uint8_t Command)
+void Car_Adjust(uint8_t Want_Postion)
 {
-	if(Command==1)
+	int Temp=0;
+	if(Car_D==Want_Postion)
 	{
-		for(int i=0;i<3;i++) //13-15
-		{
-			runActionGroup(12+Order_Color_1[i],1);					
-			runActionGroup(16+i,1);
-			runActionGroup(2,1);
-		}		
+		Set_Go(Left,0.14,0,380,170);		
 	}
-	else if(Command==2) //16-18
+	else
 	{
-		for(int i=0;i<3;i++)
+		Temp=Car_D-Want_Postion;
+		if(Temp>0)
 		{
-			runActionGroup(12+Order_Color_2[i],1);					
-			runActionGroup(16+i,1);
-			runActionGroup(2,1);
-		}			
-	}	
+			Set_Go(Back,0.55*Temp,0,380,100);	
+			Ring_Adjust();
+			Set_Go(Left,0.14,0,380,170);					
+		}
+		else if(Temp<0)
+		{
+			Temp=-Temp;
+			Set_Go(Front,0.55*Temp,0,380,100);
+			Ring_Adjust();
+			Set_Go(Left,0.14,0,380,170);								
+		}
+	}
+	Car_D=Want_Postion;
+}
+
+uint8_t PUT(uint8_t *Color_Order)
+{	
+	for(int i=0;i<3;i++)
+	{
+	//走到对应的圆环之前
+		Car_Adjust(Color_Order[i]);
+	//放物块
+		runActionGroup(7+i,1);
+		runActionGroup(11,1);
+		runActionGroup(6,1);
+		Set_Go(Right,0.1,0,380,170);							
+	}
+	Car_Adjust(2);	
+}
+
+void Catch(uint8_t *Color_Order)
+{
+	for(int i=0;i<3;i++) //13-15
+	{
+		runActionGroup(12+Color_Order[i],1);					
+		runActionGroup(16+i,1);
+		runActionGroup(2,1);
+	}		
 }
 
 //根据圆环识别来调整车身位置达到放置物块位置
@@ -466,8 +500,7 @@ void Ring_Adjust(void)
 				}
 			}
 		}
-	}
-	  
+	}	  
 }
 
 
@@ -755,22 +788,20 @@ void Run()
 	
 		Set_Go(Turn_L,0,90,0,0);
 		Set_Go(Right,0.13,0,380,100);
-				
-		
+						
 	//抵达粗加工区
 		runActionGroup(6,1);
 		
 		Delay_ms(1000);
 	  Ring_Adjust();
-		Set_Go(Left,0.14,0,380,170);
 		
 		//抓7-9按顺序抓取  放10-12放123
-		
-		Put(1);
+		PUT(Order_Color_1);
+
 		runActionGroup(2,1);
 		
 		//抓13-15按顺序抓取 放16-18		
-		Catch(1);
+		Catch(Order_Color_1);
 		
 		Set_Go(Left,0.22,0,380,170);		
 		Set_Go(Back,3.18,0,380,120);
@@ -782,11 +813,10 @@ void Run()
 		
 		Delay_ms(1000);
 	  Ring_Adjust();
-		Set_Go(Left,0.14,0,380,170);
 		
 		//抓7-9按顺序抓取  放10-12放123
-		
-		Put(1);
+		PUT(Order_Color_2);
+
 		runActionGroup(2,1);
 					
 	

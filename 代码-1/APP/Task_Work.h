@@ -15,6 +15,7 @@ void Contl_Servo(uint8_t command);
 void Usart2WriteBuf(uint8_t *buf, uint8_t len);
 void runActionGroup(uint8_t numOfAction, uint16_t Times);
 uint8_t OpenMv_Part(uint8_t Command);
+void Ring_Adjust(void);
 
 void Try(uint8_t num);
 void TRY(uint8_t i);
