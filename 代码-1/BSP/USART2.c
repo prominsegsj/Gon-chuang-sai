@@ -127,7 +127,18 @@ void Usart2WriteBuf(uint8_t *buf, uint8_t len)
 //控制舵机运行动作组函数
 void runActionGroup(uint8_t numOfAction, uint16_t Times)
 {
-	while(Servo_Flag==0);
+	int a=0;
+	while(Servo_Flag==0)
+	{
+		//预防程序卡死
+		Delay_ms(3);
+		if(a>4500)
+		{
+			break;
+			Servo_Flag=1;
+		}
+		a++;
+	}
 	LobotTxBuf[0] = LobotTxBuf[1] = FRAME_HEADER;  //发送数据帧头
 	LobotTxBuf[2] = 5;                      //数据控制位数
 	LobotTxBuf[3] = CMD_ACTION_GROUP_RUN;   //数据控制执行动作组指令

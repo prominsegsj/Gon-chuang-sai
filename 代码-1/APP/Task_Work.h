@@ -6,7 +6,13 @@
 #define Left  3
 #define Right 4
 #define Turn_L  5
-#define Turn_R  6
+#define Turn_L1  6
+#define Turn_L2  7
+#define Turn_L3  8
+#define Turn_R  9
+#define Turn_R1  10
+#define Turn_R2  11
+#define Turn_R3  12
 
 void Set_Go(uint8_t Order,float Pos,uint8_t Angle,uint16_t V,uint8_t Acc);
 void AD_Power(void);

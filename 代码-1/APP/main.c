@@ -44,7 +44,8 @@ void Init(void)
 int main(void)
 { 
 	Init();
-	
+
+//	Try(9);
 	Run();	
 	
 	while(1)

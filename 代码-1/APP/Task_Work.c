@@ -26,7 +26,7 @@ extern uint8_t Color_Data[3];
 extern uint8_t Ring_Data[2];
 
 //电机控制部分
-#define D_TIM 500   //主要用于电机控制的延时
+#define D_TIM 350   //主要用于电机控制的延时
 uint8_t motor_Flag=0;
 uint8_t cmd[3]={3,0x3A,0x6B}; //发送获取电机标志位 地址 功能码 校验位
 uint8_t DIR[4]={0}; //用于存储电机方向
@@ -49,7 +49,7 @@ extern uint8_t Servo_Flag;
 //任务运动部分
 uint8_t Car_D=2;
 
-void Contral_Car(uint8_t Order,float Pos,uint8_t Angle,uint16_t V,uint8_t Acc)
+void Contral_Car(uint8_t Order,float Pos,uint32_t Angle,uint16_t V,uint8_t Acc)
 {
 	int a=0;
 	MOTOR.P_DIR=DIR;
@@ -63,8 +63,8 @@ void Contral_Car(uint8_t Order,float Pos,uint8_t Angle,uint16_t V,uint8_t Acc)
 		case Back:{MOTOR.P_DIR[0]=1;MOTOR.P_DIR[1]=1;MOTOR.P_DIR[2]=0;MOTOR.P_DIR[3]=0;MOTOR.POS=3200*Pos;}break; //后退
 		case Left:{MOTOR.P_DIR[0]=1;MOTOR.P_DIR[1]=0;MOTOR.P_DIR[2]=1;MOTOR.P_DIR[3]=0;MOTOR.POS=3200*Pos;}break; //左平移
 		case Right:{MOTOR.P_DIR[0]=0;MOTOR.P_DIR[1]=1;MOTOR.P_DIR[2]=0;MOTOR.P_DIR[3]=1;MOTOR.POS=3200*Pos;}break;//右平移
-		case Turn_L:{MOTOR.P_DIR[0]=1;MOTOR.P_DIR[1]=1;MOTOR.P_DIR[2]=1;MOTOR.P_DIR[3]=1;MOTOR.V=300;MOTOR.Acc=110;MOTOR.POS=43.84*Angle;}break;//向左转
-		case Turn_R:{MOTOR.P_DIR[0]=0;MOTOR.P_DIR[1]=0;MOTOR.P_DIR[2]=0;MOTOR.P_DIR[3]=0;MOTOR.V=300;MOTOR.Acc=110;MOTOR.POS=43.6*Angle;}break;	//向右转		
+		case Turn_L:{MOTOR.P_DIR[0]=1;MOTOR.P_DIR[1]=1;MOTOR.P_DIR[2]=1;MOTOR.P_DIR[3]=1;MOTOR.V=300;MOTOR.Acc=110;MOTOR.POS=Angle;}break;//向左转
+		case Turn_R:{MOTOR.P_DIR[0]=0;MOTOR.P_DIR[1]=0;MOTOR.P_DIR[2]=0;MOTOR.P_DIR[3]=0;MOTOR.V=300;MOTOR.Acc=110;MOTOR.POS=Angle;}break;	//向右转		
 	}
 	//预防两次运动冲突
 	while(motor_Flag)
@@ -104,12 +104,32 @@ void Contral_Car(uint8_t Order,float Pos,uint8_t Angle,uint16_t V,uint8_t Acc)
 		
 }
 
+//控制小车转向 调控转向幅度
+void Contral_Turn_Car(uint8_t Order,uint8_t Angle)
+{
+	uint32_t ANGLE;
+	switch(Order)
+	{
+		case Turn_L:{ANGLE=44.2*Angle;Contral_Car(Turn_L,0,ANGLE,0,0);}break;
+		case Turn_L1:{ANGLE=44.4*Angle;Contral_Car(Turn_L,0,ANGLE,0,0);}break;
+		case Turn_L2:{ANGLE=43.7*Angle;Contral_Car(Turn_L,0,ANGLE,0,0);}break;
+		case Turn_L3:{ANGLE=44.1*Angle;Contral_Car(Turn_L,0,ANGLE,0,0);}break;
+		case Turn_R:{ANGLE=44.9*Angle;Contral_Car(Turn_R,0,ANGLE,0,0);}break;
+		case Turn_R1:{ANGLE=44.9*Angle;Contral_Car(Turn_R,0,ANGLE,0,0);}break;
+		case Turn_R2:{ANGLE=44.88*Angle;Contral_Car(Turn_R,0,ANGLE,0,0);}break;
+		case Turn_R3:{ANGLE=44.83*Angle;Contral_Car(Turn_R,0,ANGLE,0,0);}break;		
+	}
+}
 
 //在原料区物料抓取
 void Task_Catch_Work(uint8_t *Color_Order)
 {
 	//调整车身的位置
-	if(Color_Data[2]>68)
+	if(Color_Data[2]<20)
+	{
+		Contral_Car(Left,0.07,0,380,100);		
+	}
+	else if(Color_Data[2]>68)
 	{
 		Contral_Car(Right,0.2,0,380,100);
 	}
@@ -138,6 +158,14 @@ void Task_Catch_Work(uint8_t *Color_Order)
 //此函数是一次性放三个物块
 void Put(uint8_t *Color_Order)
 {
+	if(Ring_Data[1]<=65&&Ring_Data[1]>=61)
+	{
+		Contral_Car(Left,0.125,0,380,170);						
+	}
+	else
+	{
+		Contral_Car(Left,0.1,0,380,170);		
+	}	
 	for(int i=0;i<3;i++)
 	{
 		runActionGroup(7+i,1);
@@ -151,23 +179,44 @@ void Car_Adjust(uint8_t Want_Postion)
 	int Temp=0;
 	if(Car_D==Want_Postion)
 	{
-		Contral_Car(Left,0.14,0,380,170);		
+		if(Ring_Data[1]<=65&&Ring_Data[1]>=61)
+		{
+			Contral_Car(Left,0.125,0,380,170);						
+		}
+		else
+		{
+			Contral_Car(Left,0.1,0,380,170);		
+		}	
 	}
 	else
 	{
 		Temp=Car_D-Want_Postion;
 		if(Temp>0)
 		{
-			Contral_Car(Back,0.55*Temp,0,380,100);	
+			Contral_Car(Back,0.592*Temp,0,380,100);	
 			Ring_Adjust();
-			Contral_Car(Left,0.14,0,380,170);					
+			if(Ring_Data[1]<=65&&Ring_Data[1]>=61)
+			{
+				Contral_Car(Left,0.125,0,380,170);						
+			}
+			else
+			{
+				Contral_Car(Left,0.1,0,380,170);						
+			}
 		}
 		else if(Temp<0)
 		{
 			Temp=-Temp;
-			Contral_Car(Front,0.55*Temp,0,380,100);
+			Contral_Car(Front,0.592*Temp,0,380,100);
 			Ring_Adjust();
-			Contral_Car(Left,0.14,0,380,170);								
+			if(Ring_Data[1]<=65&&Ring_Data[1]>=61)
+			{
+				Contral_Car(Left,0.125,0,380,170);						
+			}
+			else 
+			{
+				Contral_Car(Left,0.1,0,380,170);						
+			}
 		}
 	}
 	Car_D=Want_Postion;
@@ -184,9 +233,10 @@ uint8_t PUT(uint8_t *Color_Order)
 		runActionGroup(7+i,1);
 		runActionGroup(11,1);
 		runActionGroup(6,1);
-		Contral_Car(Right,0.1,0,380,170);							
+		Contral_Car(Right,0.17,0,380,170);							
 	}
-	Car_Adjust(2);	
+	Car_Adjust(2);
+	Contral_Car(Left,0.037,0,380,170);								
 }
 
 //此函数为一次性抓三个
@@ -212,7 +262,7 @@ void Ring_Adjust(void)
 		OpenMv_Part(See_Ring);
 		if(Ring_Data[1]==6)//表示没有成功识别到圆环
 		{
-			Contral_Car(Front,0.15,0,200,80);
+			Contral_Car(Front,0.1,0,200,80);
 			Contral_Car(Right,0.09,0,200,80);																					
 			continue;	
 		}
@@ -474,6 +524,17 @@ void Try(uint8_t num)
 			}
 
 		}break;
+		case 9://电压测试
+		{
+			runActionGroup(6,1);
+			Delay_ms(1000);
+			while (1)
+			{
+				OpenMv_Part(See_Ring);
+				Delay_ms(10);
+			}
+
+		}break;
 		
 	}
 }
@@ -481,34 +542,26 @@ void Try(uint8_t num)
 //以下为比赛任务逻辑的调试部分
 void Run()
 {
-	
-		Contral_Car(Left,0.95,0,380,100); 
-		Contral_Car(Front,3.15,0,380,100); 	
+		Contral_Car(Left,0.95,0,100,130); 
+		Delay_ms(2000);
+		Contral_Car(Front,3.15,0,100,130); 	
 		Try(2);
 		runActionGroup(2,1);
-		Contral_Car(Front,2.842,0,380,100);
-		Contral_Car(Right,0.28,0,380,170);
-		
-	  Delay_ms(200);
-	  OpenMv_Part(See_Color);		
-	  Task_Catch_Work(Order_Color_1);
+		Contral_Car(Front,2.842,0,100,130);
+		Contral_Car(Right,0.43,0,100,130);
+		OpenMv_Part(See_Color);		
+		Task_Catch_Work(Order_Color_1);
 
-		Contral_Car(Left,0.4,0,380,170);
-		Contral_Car(Back,1.72,0,380,100);
-		Contral_Car(Turn_L,0,90,0,0);
-
-		Contral_Car(Front,3.5,0,380,100);
-		Contral_Car(Front,3.5,0,380,100);	
-	
-		Contral_Car(Turn_L,0,90,0,0);
-		Contral_Car(Right,0.13,0,380,100);
-						
+		Contral_Car(Left,0.4,0,100,130);
+		Contral_Car(Back,1.7,0,100,130);
+		Contral_Turn_Car(Turn_L,90);
+		Contral_Car(Front,7.1,0,100,70);
+		Contral_Turn_Car(Turn_L1,90);
+		Contral_Car(Right,0.1,0,450,170);
 	//抵达粗加工区
-		runActionGroup(6,1);
-		
+		runActionGroup(6,1);	
 		Delay_ms(1000);
-	  Ring_Adjust();
-		
+		Ring_Adjust();
 		//抓7-9按顺序抓取  放10-12放123
 		PUT(Order_Color_1);
 
@@ -516,20 +569,63 @@ void Run()
 		
 		//抓13-15按顺序抓取 放16-18		
 		Catch(Order_Color_1);
+
+			Contral_Car(Left,0.3,0,100,130);
+			Contral_Car(Back,3.5,0,100,130);
+		Contral_Turn_Car(Turn_R,90);
+			Contral_Car(Back,3.25,0,100,130);
+			Contral_Car(Right,0.3,0,100,130);
+			runActionGroup(6,1);	
+			Delay_ms(1000);
+			Ring_Adjust();
+		//抓7-9按顺序抓取  放10-12放123
+		PUT(Order_Color_1);
+
+		runActionGroup(2,1);
 		
-		Contral_Car(Left,0.22,0,380,170);		
-		Contral_Car(Back,3.18,0,380,120);
-		Contral_Car(Turn_R,0,90,0,0);
-		Contral_Car(Back,3.5,0,380,100);
-		Contral_Car(Right,0.38,0,380,100);
-	//抵达暂存区
-		runActionGroup(6,1);
+			Contral_Car(Left,0.2,0,100,130);
+			Contral_Car(Back,3.65,0,100,10);
+		Contral_Turn_Car(Turn_R1,90);
+			Contral_Car(Back,1.83,0,100,100);
+			Contral_Car(Right,0.2,0,100,100);
+			OpenMv_Part(See_Color);		
+			Task_Catch_Work(Order_Color_2);
 		
+/***************************第二遍*******************************************/
+
+		Contral_Car(Left,0.3,0,100,100);
+		Contral_Car(Back,1.65,0,100,100);
+		Contral_Turn_Car(Turn_L2,90);
+		Contral_Car(Front,7.34,0,100,70);
+		Contral_Turn_Car(Turn_L3,90);
+		runActionGroup(6,1);	
 		Delay_ms(1000);
-	  Ring_Adjust();
-		
+		Ring_Adjust();
 		//抓7-9按顺序抓取  放10-12放123
 		PUT(Order_Color_2);
 
 		runActionGroup(2,1);
+		
+		//抓13-15按顺序抓取 放16-18		
+		Catch(Order_Color_2);
+		
+			Contral_Car(Left,0.4,0,100,100);
+			Contral_Car(Back,3.5,0,100,100);
+		Contral_Turn_Car(Turn_R2,90);
+			Contral_Car(Back,3.25,0,100,100);
+			Contral_Car(Right,0.3,0,100,100);
+			runActionGroup(6,1);	
+			Delay_ms(1000);
+			Ring_Adjust();
+		//抓7-9按顺序抓取  放10-12放123
+		Put(Order_Color_2);
+
+		runActionGroup(2,1);
+					
+			Contral_Car(Left,0.3,0,100,100);
+			Contral_Car(Back,3.655,0,100,100);
+		Contral_Turn_Car(Turn_R3,90);
+			Contral_Car(Back,7.6,0,100,100);
+			Contral_Car(Right,0.6,0,100,100);
+		
 }
