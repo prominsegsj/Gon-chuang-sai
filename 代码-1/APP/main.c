@@ -47,7 +47,6 @@ int main(void)
 
 //	Try(9);
 	Run();	
-	
 	while(1)
 		{
 			

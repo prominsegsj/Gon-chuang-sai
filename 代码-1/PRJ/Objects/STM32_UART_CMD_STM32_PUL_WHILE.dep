@@ -1,5 +1,5 @@
 Dependencies for Project 'STM32_UART_CMD', Target 'STM32_PUL_WHILE': (DO NOT MODIFY !)
-F (..\APP\main.c)(0x675559D9)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\APP -I ..\BSP -I ..\CMSIS -I ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc -I ..\DRIVERS -I ..\MPU6050 -I ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\src-I.\RTE\_STM32_PUL_WHILE-ID:\keil5(4)\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-ID:\keil5(4)\ARM\CMSIS\Include-D__UVISION_VERSION="524" -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
+F (..\APP\main.c)(0x675590D1)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\APP -I ..\BSP -I ..\CMSIS -I ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc -I ..\DRIVERS -I ..\MPU6050 -I ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\src-I.\RTE\_STM32_PUL_WHILE-ID:\keil5(4)\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-ID:\keil5(4)\ARM\CMSIS\Include-D__UVISION_VERSION="524" -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
 I (..\CMSIS\stm32f10x.h)(0x4D783CB4)
 I (..\CMSIS\core_cm3.h)(0x4D523B58)
 I (D:\keil5(4)\ARM\ARMCC\include\stdint.h)(0x588B8344)
@@ -41,7 +41,7 @@ I (..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_gpio.h)(0x4D783BB4)
 I (..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_rcc.h)(0x4D783BB4)
 I (..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\stm32f10x_usart.h)(0x4D783BB4)
 I (..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc\misc.h)(0x4D783BB4)
-F (..\APP\Task_Work.c)(0x67556E4B)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\APP -I ..\BSP -I ..\CMSIS -I ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc -I ..\DRIVERS -I ..\MPU6050 -I ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\src-I.\RTE\_STM32_PUL_WHILE-ID:\keil5(4)\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-ID:\keil5(4)\ARM\CMSIS\Include-D__UVISION_VERSION="524" -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER-o .\objects\task_work.o --omf_browse .\objects\task_work.crf --depend .\objects\task_work.d)
+F (..\APP\Task_Work.c)(0x6755A04A)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\APP -I ..\BSP -I ..\CMSIS -I ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\inc -I ..\DRIVERS -I ..\MPU6050 -I ..\LIB\STM32F10x_StdPeriph_Lib_V3.5.0\src-I.\RTE\_STM32_PUL_WHILE-ID:\keil5(4)\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-ID:\keil5(4)\ARM\CMSIS\Include-D__UVISION_VERSION="524" -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER-o .\objects\task_work.o --omf_browse .\objects\task_work.crf --depend .\objects\task_work.d)
 I (..\CMSIS\stm32f10x.h)(0x4D783CB4)
 I (..\CMSIS\core_cm3.h)(0x4D523B58)
 I (D:\keil5(4)\ARM\ARMCC\include\stdint.h)(0x588B8344)
