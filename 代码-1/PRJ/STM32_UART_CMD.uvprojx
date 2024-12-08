@@ -535,6 +535,16 @@
               <FileType>5</FileType>
               <FilePath>..\BSP\AD.h</FilePath>
             </File>
+            <File>
+              <FileName>Contral_Car.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\BSP\Contral_Car.c</FilePath>
+            </File>
+            <File>
+              <FileName>Contral_Car.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\BSP\Contral_Car.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

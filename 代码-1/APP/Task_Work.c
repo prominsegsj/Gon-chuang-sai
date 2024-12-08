@@ -28,6 +28,14 @@ extern uint8_t Ring_Data[2];
 //电机控制部分
 #define D_TIM 500   //主要用于电机控制的延时
 uint8_t motor_Flag=0;
+uint8_t cmd[3]={3,0x3A,0x6B}; //发送获取电机标志位 地址 功能码 校验位
+uint8_t DIR[4]={0}; //用于存储电机方向
+struct Motor{
+	uint8_t *P_DIR;
+	uint32_t POS;
+	uint16_t V;
+	uint8_t Acc;	
+}MOTOR;
 
 //二维码扫码模块
 extern int DATA1;
@@ -41,380 +49,131 @@ extern uint8_t Servo_Flag;
 //任务运动部分
 uint8_t Car_D=2;
 
-void Set_Go(uint8_t Order,float Pos,uint8_t Angle,uint16_t V,uint8_t Acc)
+void Contral_Car(uint8_t Order,float Pos,uint8_t Angle,uint16_t V,uint8_t Acc)
 {
-
-	uint32_t Angle_Num; 
 	int a=0;
-	uint8_t cmd[3] = {0};  
-	// 装载命令
-	cmd[0] =  3;                       // 地址
-	cmd[1] =  0x3A;                    //功能码  
-	cmd[2] =  0x6B;                    //效验位
-	
-	float t=Pos;
-	
-	//前进	
-	if(Order==Front)
-	{
-		while(motor_Flag)
-		{
-			// 发送命令 获取电机状态
-			usart_SendCmd(cmd, 3);
-			Delay_ms(10);
-			
-			if((rxCmd[2]&0x02)==0x02)
-			{				
-				Delay_ms(D_TIM);
-				//电机到位
-				motor_Flag=0;
-			}
-			//防止超时卡死
-			if(a>900)
-			{
-				Delay_ms(D_TIM);
-				//电机到位
-				motor_Flag=0;				
-			}
-			a++;
-		}		
-
-			Emm_V5_Pos_Control(1, 0, V, Acc, 3200*t, 0, 1);
-			Delay_ms(10);
-			Emm_V5_Pos_Control(2, 0, V, Acc, 3200*t, 0, 1);
-			Delay_ms(10);
-			Emm_V5_Pos_Control(3, 1, V, Acc, 3200*t, 0, 1);
-			Delay_ms(10);
-			Emm_V5_Pos_Control(4, 1, V, Acc, 3200*t, 0, 1);
-			Delay_ms(10);
-			
-			Emm_V5_Synchronous_motion(0);
-			Delay_ms(10);
-		  motor_Flag=1;
+	MOTOR.P_DIR=DIR;
+	MOTOR.V=V;
+	MOTOR.Acc=Acc;
 		
+	//需要数组 存放速度方向
+	switch(Order)
+	{
+		case Front:{MOTOR.P_DIR[0]=0;MOTOR.P_DIR[1]=0;MOTOR.P_DIR[2]=1;MOTOR.P_DIR[3]=1;MOTOR.POS=3200*Pos;}break;//前进
+		case Back:{MOTOR.P_DIR[0]=1;MOTOR.P_DIR[1]=1;MOTOR.P_DIR[2]=0;MOTOR.P_DIR[3]=0;MOTOR.POS=3200*Pos;}break; //后退
+		case Left:{MOTOR.P_DIR[0]=1;MOTOR.P_DIR[1]=0;MOTOR.P_DIR[2]=1;MOTOR.P_DIR[3]=0;MOTOR.POS=3200*Pos;}break; //左平移
+		case Right:{MOTOR.P_DIR[0]=0;MOTOR.P_DIR[1]=1;MOTOR.P_DIR[2]=0;MOTOR.P_DIR[3]=1;MOTOR.POS=3200*Pos;}break;//右平移
+		case Turn_L:{MOTOR.P_DIR[0]=1;MOTOR.P_DIR[1]=1;MOTOR.P_DIR[2]=1;MOTOR.P_DIR[3]=1;MOTOR.V=300;MOTOR.Acc=110;MOTOR.POS=43.84*Angle;}break;//向左转
+		case Turn_R:{MOTOR.P_DIR[0]=0;MOTOR.P_DIR[1]=0;MOTOR.P_DIR[2]=0;MOTOR.P_DIR[3]=0;MOTOR.V=300;MOTOR.Acc=110;MOTOR.POS=43.6*Angle;}break;	//向右转		
 	}
-	
-	//后退
-	else if(Order==Back)
+	//预防两次运动冲突
+	while(motor_Flag)
 	{
-		while(motor_Flag)
+		// 发送命令 获取电机状态
+		usart_SendCmd(cmd, 3);
+		Delay_ms(10);
+			
+		if((rxCmd[2]&0x02)==0x02)
+		{				
+			Delay_ms(D_TIM);
+			//电机到位
+			motor_Flag=0;
+		}
+		//防止超时卡死
+		if(a>900)
 		{
-			// 发送命令 获取电机状态
-			usart_SendCmd(cmd, 3);
-			Delay_ms(10);
-			
-			if((rxCmd[2]&0x02)==0x02)
-			{				
-				Delay_ms(D_TIM);
-				//电机到位
-				motor_Flag=0;
-			}
-			//防止超时卡死
-			if(a>900)
-			{
-				Delay_ms(D_TIM);
-				//电机到位
-				motor_Flag=0;				
-			}
-			a++;
-		}		
-		
-			Emm_V5_Pos_Control(1, 1, V, Acc, 3200*t, 0, 1);
-			Delay_ms(10);
-			Emm_V5_Pos_Control(2, 1, V, Acc, 3200*t, 0, 1);
-			Delay_ms(10);
-			Emm_V5_Pos_Control(3, 0, V, Acc, 3200*t, 0, 1);
-			Delay_ms(10);
-			Emm_V5_Pos_Control(4, 0, V, Acc, 3200*t, 0, 1);
-			Delay_ms(10);
-			
-			Emm_V5_Synchronous_motion(0);
-			Delay_ms(10);
-		  motor_Flag=1;
-		
+			Delay_ms(D_TIM);
+			//电机到位
+			motor_Flag=0;				
+		}
+		a++;
 	}
-	
-	//左移
-	else if(Order==Left)
-	{
-		while(motor_Flag)
-		{
-			// 发送命令 获取电机状态
-			usart_SendCmd(cmd, 3);
-			Delay_ms(10);
+	//运动实际控制
+	Emm_V5_Pos_Control(1, MOTOR.P_DIR[0], MOTOR.V, MOTOR.Acc, MOTOR.POS, 0, 1);
+	Delay_ms(10);
+	Emm_V5_Pos_Control(2, MOTOR.P_DIR[1], MOTOR.V, MOTOR.Acc, MOTOR.POS, 0, 1);
+	Delay_ms(10);
+	Emm_V5_Pos_Control(3, MOTOR.P_DIR[2], MOTOR.V, MOTOR.Acc, MOTOR.POS, 0, 1);
+	Delay_ms(10);
+	Emm_V5_Pos_Control(4, MOTOR.P_DIR[3], MOTOR.V, MOTOR.Acc, MOTOR.POS, 0, 1);
+	Delay_ms(10);
 			
-			if((rxCmd[2]&0x02)==0x02)
-			{				
-				Delay_ms(D_TIM);
-				//电机到位
-				motor_Flag=0;
-			}
-			//防止超时卡死
-			if(a>900)
-			{
-				Delay_ms(D_TIM);
-				//电机到位
-				motor_Flag=0;				
-			}
-			a++;
-		}	
+	Emm_V5_Synchronous_motion(0);
+	Delay_ms(10);
+	motor_Flag=1;
 		
-			Emm_V5_Pos_Control(1, 1, V, Acc, 3200*t, 0, 1);
-			Delay_ms(10);
-			Emm_V5_Pos_Control(2, 0, V, Acc, 3200*t, 0, 1);
-			Delay_ms(10);
-			Emm_V5_Pos_Control(3, 1, V, Acc, 3200*t, 0, 1);
-			Delay_ms(10);
-			Emm_V5_Pos_Control(4, 0, V, Acc, 3200*t, 0, 1);
-			Delay_ms(10);
-			
-			Emm_V5_Synchronous_motion(0);
-			Delay_ms(10);
-		  motor_Flag=1;		
-	}	
-	
-	//右移
-	else if(Order==Right)
-	{
-		while(motor_Flag)
-		{
-			// 发送命令 获取电机状态
-			usart_SendCmd(cmd, 3);
-			Delay_ms(10);
-			
-			if((rxCmd[2]&0x02)==0x02)
-			{				
-				Delay_ms(D_TIM);
-				//电机到位
-				motor_Flag=0;
-			}
-			//防止超时卡死
-			if(a>900)
-			{
-				Delay_ms(D_TIM);
-				//电机到位
-				motor_Flag=0;				
-			}
-			a++;
-		}		
-		
-			Emm_V5_Pos_Control(1, 0, V, Acc, 3200*t, 0, 1);
-			Delay_ms(10);
-			Emm_V5_Pos_Control(2, 1, V, Acc, 3200*t, 0, 1);
-			Delay_ms(10);
-			Emm_V5_Pos_Control(3, 0, V, Acc, 3200*t, 0, 1);
-			Delay_ms(10);
-			Emm_V5_Pos_Control(4, 1, V, Acc, 3200*t, 0, 1);
-			Delay_ms(10);
-			
-			Emm_V5_Synchronous_motion(0);
-			Delay_ms(10);
-		  motor_Flag=1;		
-	}	
-	
-	//转向
-	else if(Order==Turn_L)
-	{
-		while(motor_Flag)
-		{
-			// 发送命令 获取电机状态
-			usart_SendCmd(cmd, 3);
-			Delay_ms(10);
-			
-			if((rxCmd[2]&0x02)==0x02)
-			{				
-				Delay_ms(D_TIM);
-				//电机到位
-				motor_Flag=0;
-			}
-			//防止超时卡死
-			if(a>900)
-			{
-				Delay_ms(D_TIM);
-				//电机到位
-				motor_Flag=0;				
-			}
-			a++;
-		}		
-		
-		  Angle_Num=43.84*Angle;
-			Emm_V5_Pos_Control(1, 1, 300, 110, Angle_Num, 0, 1);
-			Delay_ms(10);
-			Emm_V5_Pos_Control(2, 1, 300, 110, Angle_Num, 0, 1);
-			Delay_ms(10);
-			Emm_V5_Pos_Control(3, 1, 300, 110, Angle_Num, 0, 1);
-			Delay_ms(10);
-			Emm_V5_Pos_Control(4, 1, 300, 110, Angle_Num, 0, 1);
-			Delay_ms(10);
-			
-			Emm_V5_Synchronous_motion(0);
-			Delay_ms(10);
-		  motor_Flag=1;
-		
-	}
-	else if(Order==Turn_R)
-	{
-		while(motor_Flag)
-		{
-			// 发送命令 获取电机状态
-			usart_SendCmd(cmd, 3);
-			Delay_ms(10);
-			
-			if((rxCmd[2]&0x02)==0x02)
-			{				
-				Delay_ms(D_TIM);
-				//电机到位
-				motor_Flag=0;
-			}
-			//防止超时卡死
-			if(a>900)
-			{
-				Delay_ms(D_TIM);
-				//电机到位
-				motor_Flag=0;				
-			}
-			a++;
-		}		
-		  Angle_Num=43.6*Angle;
-			Emm_V5_Pos_Control(1, 0, 300, 110, Angle_Num, 0, 1);
-			Delay_ms(10);
-			Emm_V5_Pos_Control(2, 0, 300, 110, Angle_Num, 0, 1);
-			Delay_ms(10);
-			Emm_V5_Pos_Control(3, 0, 300, 110, Angle_Num, 0, 1);
-			Delay_ms(10);
-			Emm_V5_Pos_Control(4, 0, 300, 110, Angle_Num, 0, 1);
-			Delay_ms(10);
-			
-			Emm_V5_Synchronous_motion(0);
-			Delay_ms(10);
-		  motor_Flag=1;		
-	}
-	
 }
 
-uint8_t OpenMv_Part(uint8_t Command)
-{
-	switch(Command)
-	{
-		case See_Color:
-		{
-			Flag_Color=0;
-			USART_SendData(UART5,0x02);
-			while(Flag_Color!=1);
-		}break;
-		case See_Ring:
-		{
-			Flag_Ring=0;
-			USART_SendData(UART5,0x01);
-			while(Flag_Ring!=1);
-		}break;				
-	}
-}
 
 //在原料区物料抓取
-void Task_Catch_Work(uint8_t Command)
+void Task_Catch_Work(uint8_t *Color_Order)
 {
 	//调整车身的位置
 	if(Color_Data[2]>68)
 	{
-		Set_Go(Right,0.2,0,380,100);
+		Contral_Car(Right,0.2,0,380,100);
 	}
 	else if(Color_Data[2]>59&&Color_Data[2]<=68)
 	{
-		Set_Go(Right,0.1,0,380,100);		
+		Contral_Car(Right,0.1,0,380,100);		
 	}
-	switch(Command)
+	for(int a=0;a<3;a++)
 	{
-		//第一遍抓取
-		case 1:
+		while(1)
 		{
-			for(int a=0;a<3;a++)
+			if(Color_Data[0]==Color_Order[a])
 			{
-				while(1)
-				{
-					if(Color_Data[0]==Order_Color_1[a])
-					{
-						runActionGroup(3+a,1);
-						runActionGroup(2,1);						
-						break;
-					}
-					else 
-					{
-						OpenMv_Part(See_Color);
-					}											
-				}
-			}			
-		}break;
-		//第二遍抓取
-		case 2:
-		{
-			for(int a=0;a<3;a++)
+				runActionGroup(3+a,1);
+				runActionGroup(2,1);						
+				break;
+			}
+			else 
 			{
-				while(1)
-				{
-					if(Color_Data[0]==Order_Color_2[a])
-					{
-						runActionGroup(3+a,1);
-						runActionGroup(2,1);												
-						break;
-					}
-					else 
-					{
-						OpenMv_Part(See_Color);
-					}											
-				}
-			}			
-		}break;		
-	}
+				OpenMv_Part(See_Color);
+			}											
+		}
+	}			
 }
 
-void Put(uint8_t Command)
+//此函数是一次性放三个物块
+void Put(uint8_t *Color_Order)
 {
-	if(Command==1)
+	for(int i=0;i<3;i++)
 	{
-		for(int i=0;i<3;i++)
-		{
-			runActionGroup(7+i,1);
-			runActionGroup(9+Order_Color_1[i],1);					
-		}		
-	}
-	else if(Command==2)
-	{
-		for(int i=0;i<3;i++)
-		{
-			runActionGroup(7+i,1);
-			runActionGroup(9+Order_Color_2[i],1);					
-		}			
-	}
+		runActionGroup(7+i,1);
+		runActionGroup(9+Color_Order[i],1);					
+	}		
 }
 
+//此函数主要用于服务放物块调整
 void Car_Adjust(uint8_t Want_Postion)
 {
 	int Temp=0;
 	if(Car_D==Want_Postion)
 	{
-		Set_Go(Left,0.14,0,380,170);		
+		Contral_Car(Left,0.14,0,380,170);		
 	}
 	else
 	{
 		Temp=Car_D-Want_Postion;
 		if(Temp>0)
 		{
-			Set_Go(Back,0.55*Temp,0,380,100);	
+			Contral_Car(Back,0.55*Temp,0,380,100);	
 			Ring_Adjust();
-			Set_Go(Left,0.14,0,380,170);					
+			Contral_Car(Left,0.14,0,380,170);					
 		}
 		else if(Temp<0)
 		{
 			Temp=-Temp;
-			Set_Go(Front,0.55*Temp,0,380,100);
+			Contral_Car(Front,0.55*Temp,0,380,100);
 			Ring_Adjust();
-			Set_Go(Left,0.14,0,380,170);								
+			Contral_Car(Left,0.14,0,380,170);								
 		}
 	}
 	Car_D=Want_Postion;
 }
 
+//此函数为分别调整并放置物块逻辑
 uint8_t PUT(uint8_t *Color_Order)
 {	
 	for(int i=0;i<3;i++)
@@ -425,11 +184,12 @@ uint8_t PUT(uint8_t *Color_Order)
 		runActionGroup(7+i,1);
 		runActionGroup(11,1);
 		runActionGroup(6,1);
-		Set_Go(Right,0.1,0,380,170);							
+		Contral_Car(Right,0.1,0,380,170);							
 	}
 	Car_Adjust(2);	
 }
 
+//此函数为一次性抓三个
 void Catch(uint8_t *Color_Order)
 {
 	for(int i=0;i<3;i++) //13-15
@@ -452,8 +212,8 @@ void Ring_Adjust(void)
 		OpenMv_Part(See_Ring);
 		if(Ring_Data[1]==6)//表示没有成功识别到圆环
 		{
-			Set_Go(Front,0.15,0,200,80);
-			Set_Go(Right,0.09,0,200,80);																					
+			Contral_Car(Front,0.15,0,200,80);
+			Contral_Car(Right,0.09,0,200,80);																					
 			continue;	
 		}
 		//如果成功识别到圆环 则进行下面这些判断操作
@@ -468,46 +228,65 @@ void Ring_Adjust(void)
 			if(Ring_Data[0]<68&&Ring_Data[0]>20)
 			{
 				Temp1=0.3066-0.0041*Ring_Data[0];
-				Set_Go(Back,Temp1,0,200,100);
+				Contral_Car(Back,Temp1,0,200,100);
 			}
 			else if(Ring_Data[0]>82||Ring_Data[0]<=20)
 			{
-				Set_Go(Front,0.1,0,200,100);				
+				Contral_Car(Front,0.1,0,200,100);				
 			}
 			//调整y轴的位置
 			if(Ring_Data[1]<61&&Ring_Data[1]>45)
 			{				
 				if(Ring_Data[1]<61&&Ring_Data[1]>=53)//预防调整值过小避免卡死
 				{
-					Set_Go(Left,0.02,0,200,100);														
+					Contral_Car(Left,0.02,0,200,100);														
 				}
 				else if(Ring_Data[1]<53&&Ring_Data[1]>45)
 				{
 					Temp2=0.364-0.0052*Ring_Data[1];
-					Set_Go(Left,Temp2,0,200,100);									
+					Contral_Car(Left,Temp2,0,200,100);									
 				}
 			}
 			else if(Ring_Data[1]<95&&Ring_Data[1]>73)
 			{
 				if(Ring_Data[1]>73&&Ring_Data[1]<80)//预防调整值过小避免卡死
 				{
-					Set_Go(Right,0.04,0,200,100);																		
+					Contral_Car(Right,0.04,0,200,100);																		
 				}
 				else if(Ring_Data[1]<95&&Ring_Data[1]>=80)
 				{
 					Temp2=0.0042*Ring_Data[1]-0.299;
-					Set_Go(Right,Temp2,0,200,100);													
+					Contral_Car(Right,Temp2,0,200,100);													
 				}
 			}
 		}
 	}	  
 }
 
+//OpenMv识别部分
+uint8_t OpenMv_Part(uint8_t Command)
+{
+	switch(Command)
+	{
+		case See_Color:
+		{
+			Flag_Color=0;
+			USART_SendData(UART5,0x02);
+			while(Flag_Color!=1);
+		}break;
+		case See_Ring:
+		{
+			Flag_Ring=0;
+			USART_SendData(UART5,0x01);
+			while(Flag_Ring!=1);
+		}break;				
+	}
+}
 
-
+//用于电压测量
 void AD_Power(void)
 {
-	uint16_t ADValue;			//AD实际值
+	uint16_t ADValue;			
 	
 		ADValue = AD_GetValue();					
 		
@@ -520,7 +299,6 @@ void AD_Power(void)
 			OLED_ShowString(4, 1, "Power: Danger");       			
 		}	
 }
-
 
 ////////////////////////////////////此处为一条分界线，下面部分为调试部分/////////////////////////////////////////////////////////////////////////////////
 float pitch,roll,yaw; 			//俯仰角、横滚角、航向角					  		
@@ -541,7 +319,7 @@ extern int Get_Flag;
 //			}	
 //}
 
-
+//以下主要是模块开发的测试部分
 void Try(uint8_t num)
 {
 	switch(num)
@@ -700,94 +478,30 @@ void Try(uint8_t num)
 	}
 }
 
-void TRY(uint8_t i)
-{
-	switch(i)
-	{
-		case 1:
-		{
-	    Set_Go(Back,6,0,400,130);			
-		}break;
-		case 2:
-		{	
-			Try(7);
-			Delay_ms(1000);
-			Set_Go(Left,0.9,0,430,150);
-
-			Delay_ms(2800);
-			Set_Go(Front,3,0,400,100);
-	
-			Try(2);
-			Delay_ms(1000);
-
-			Set_Go(Front,3,0,380,100);
-			Delay_ms(5000);
-			Set_Go(Right,0.3,0,430,150);
-	
-			Delay_ms(2000);
-	
-			Emm_V5_Pos_Control(6, 1, 300, 100, 3200*0.3, 0, 0); //下降
-			Delay_ms(500);
-			setPWM(2,0,calculate_PWM(85));	
-			Delay_ms(250);
-			Emm_V5_Pos_Control(6, 0, 300, 200, 3200*0.7, 0, 0); //上升
-			Delay_ms(10);
-			Emm_V5_Pos_Control(5, 0, 300, 100, 3200*0.32, 0, 0); 
-			Delay_ms(1000);	
-			setPWM(2,0,calculate_PWM(40));	
-			Delay_ms(500);
-
-			
-			Emm_V5_Pos_Control(6, 0, 300, 100, 3200*0.8, 0, 0); 
-			Delay_ms(300);
-			Emm_V5_Pos_Control(5, 1, 300, 100, 3200*0.32, 0, 0); 
-			Delay_ms(50);
-			Set_Go(Left,0.4,0,430,150);
-			Delay_ms(2000);
-		
-			Set_Go(Back,1.7,0,420,120);
-			Set_Go(Turn_L,0,90,0,0);
-			Delay_ms(3000);
-			Set_Go(Front,3.6,0,400,100);
-			Delay_ms(5000);
-			Set_Go(Front,3.6,0,400,100);
-			Delay_ms(5000);
-			Set_Go(Turn_L,0,90,0,0);
-			Delay_ms(5000);
-			Set_Go(Left,0.4,0,430,150);
-			Delay_ms(1000);			
-			Set_Go(Back,3.3,0,400,120);
-			Delay_ms(5000);
-			Set_Go(Turn_R,0,90,0,0);
-			
-		}break;
-	}
-}
-
-
+//以下为比赛任务逻辑的调试部分
 void Run()
 {
 	
-		Set_Go(Left,0.95,0,380,100); 
-		Set_Go(Front,3.15,0,380,100); 	
+		Contral_Car(Left,0.95,0,380,100); 
+		Contral_Car(Front,3.15,0,380,100); 	
 		Try(2);
 		runActionGroup(2,1);
-		Set_Go(Front,2.842,0,380,100);
-		Set_Go(Right,0.28,0,380,170);
+		Contral_Car(Front,2.842,0,380,100);
+		Contral_Car(Right,0.28,0,380,170);
 		
 	  Delay_ms(200);
 	  OpenMv_Part(See_Color);		
-	  Task_Catch_Work(1);
+	  Task_Catch_Work(Order_Color_1);
 
-		Set_Go(Left,0.4,0,380,170);
-		Set_Go(Back,1.72,0,380,100);
-		Set_Go(Turn_L,0,90,0,0);
+		Contral_Car(Left,0.4,0,380,170);
+		Contral_Car(Back,1.72,0,380,100);
+		Contral_Car(Turn_L,0,90,0,0);
 
-		Set_Go(Front,3.5,0,380,100);
-		Set_Go(Front,3.5,0,380,100);	
+		Contral_Car(Front,3.5,0,380,100);
+		Contral_Car(Front,3.5,0,380,100);	
 	
-		Set_Go(Turn_L,0,90,0,0);
-		Set_Go(Right,0.13,0,380,100);
+		Contral_Car(Turn_L,0,90,0,0);
+		Contral_Car(Right,0.13,0,380,100);
 						
 	//抵达粗加工区
 		runActionGroup(6,1);
@@ -803,11 +517,11 @@ void Run()
 		//抓13-15按顺序抓取 放16-18		
 		Catch(Order_Color_1);
 		
-		Set_Go(Left,0.22,0,380,170);		
-		Set_Go(Back,3.18,0,380,120);
-		Set_Go(Turn_R,0,90,0,0);
-		Set_Go(Back,3.5,0,380,100);
-		Set_Go(Right,0.38,0,380,100);
+		Contral_Car(Left,0.22,0,380,170);		
+		Contral_Car(Back,3.18,0,380,120);
+		Contral_Car(Turn_R,0,90,0,0);
+		Contral_Car(Back,3.5,0,380,100);
+		Contral_Car(Right,0.38,0,380,100);
 	//抵达暂存区
 		runActionGroup(6,1);
 		
@@ -818,8 +532,4 @@ void Run()
 		PUT(Order_Color_2);
 
 		runActionGroup(2,1);
-					
-	
-	
 }
-

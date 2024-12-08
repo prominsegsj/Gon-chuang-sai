@@ -45,9 +45,6 @@ int main(void)
 { 
 	Init();
 	
-//取物料部分的位置调整
-
-	
 	Run();	
 	
 	while(1)
