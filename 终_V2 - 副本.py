@@ -14,7 +14,7 @@ uart = UART(3, 9600)
 # 颜色阈值（根据实际情况进行调整）
 thresholds = {
     "Red":(0, 55, 41, 127, -128, 127),  # generic_red_thresholds
-    "Green":(0, 67, -128, -1, -128, 127),  # generic_green_thresholds
+    "Green":(0, 65, -128, -18, -128, 78),  # generic_green_thresholds
     "Blue":(0, 60, 4, 127, -128, -26),
 }  # generic_blue_thresholds
 

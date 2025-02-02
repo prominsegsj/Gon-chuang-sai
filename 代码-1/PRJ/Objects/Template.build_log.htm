@@ -27,32 +27,24 @@ Project File Date:  12/08/2024
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'D:\keil5(4)\ARM\ARMCC\Bin'
 Build target 'STM32_PUL_WHILE'
-compiling Task_Work.c...
-..\BSP\USART2.h(13): warning:  #1-D: last line of file ends without a newline
-  #endif
-..\APP\Task_Work.h(28): warning:  #1295-D: Deprecated declaration Run - give arg types
-  void Run();
-..\APP\Task_Work.c(265): warning:  #940-D: missing return statement at end of non-void function "PUT" 
-  }
-..\APP\Task_Work.c(279): warning:  #940-D: missing return statement at end of non-void function "LAST_PUT" 
-  }
-..\APP\Task_Work.c(373): warning:  #940-D: missing return statement at end of non-void function "OpenMv_Part" 
-  }
-..\APP\Task_Work.c(470): warning:  #167-D: argument of type "volatile uint8_t *" is incompatible with parameter of type "uint8_t *"
-  						 Serial_SendArray_USART2(rxCmd,4);
-..\APP\Task_Work.c(475): warning:  #111-D: statement is unreachable
-  		}break;
-..\APP\Task_Work.c(522): warning:  #111-D: statement is unreachable
-  		}break;
-..\APP\Task_Work.c(565): warning:  #111-D: statement is unreachable
-  		}break;
-..\APP\Task_Work.c(576): warning:  #111-D: statement is unreachable
-  		}break;
-..\APP\Task_Work.c: 10 warnings, 0 errors
+compiling mpuiic.c...
+..\MPU6050\mpuiic.c(87): warning:  #61-D: integer operation result is out of range
+  	
+PU_SDA_IN();      //SDA设置为输入  
+..\MPU6050\mpuiic.c(87): warning:  #68-D: integer conversion resulted in a change of sign
+  	
+PU_SDA_IN();      //SDA设置为输入  
+..\MPU6050\mpuiic.c(147): warning:  #61-D: integer operation result is out of range
+  	
+PU_SDA_IN();//SDA设置为输入
+..\MPU6050\mpuiic.c(147): warning:  #68-D: integer conversion resulted in a change of sign
+  	
+PU_SDA_IN();//SDA设置为输入
+..\MPU6050\mpuiic.c: 4 warnings, 0 errors
 linking...
-Program Size: Code=29904 RO-data=5240 RW-data=164 ZI-data=3116  
+Program Size: Code=30468 RO-data=5244 RW-data=168 ZI-data=3120  
 FromELF: creating hex file...
-".\Objects\Template.axf" - 0 Error(s), 10 Warning(s).
+".\Objects\Template.axf" - 0 Error(s), 4 Warning(s).
 
 <h2>Software Packages used:</h2>
 

@@ -38,14 +38,13 @@ void Init(void)
 	Delay_ms(500);	          							 //上电整体延时初始化		
 	OLED_ShowString(1,1,"Init OK");          
 	AD_Power();                              //初始化完成
-	Delay_ms(500);
+	Delay_ms(2000);                          //用于测试的延时
 }
 
 int main(void)
 { 
 	Init();
 
-//	Try(9);
 	Run();	
 	while(1)
 		{

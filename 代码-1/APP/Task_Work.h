@@ -14,7 +14,7 @@
 #define Turn_R2  11
 #define Turn_R3  12
 
-void Set_Go(uint8_t Order,float Pos,uint8_t Angle,uint16_t V,uint8_t Acc);
+void Contral_Car(uint8_t Order,float Pos,uint32_t Angle,uint16_t V,uint8_t Acc,int D_TIM);
 void AD_Power(void);
 void Contl_Servo(uint8_t command);
 

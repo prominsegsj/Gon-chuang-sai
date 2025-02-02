@@ -26,7 +26,10 @@ extern uint8_t Color_Data[3];
 extern uint8_t Ring_Data[2];
 
 //电机控制部分
-#define D_TIM 350   //主要用于电机控制的延时
+#define D_TIM1 350   //主要用于电机控制的延时
+#define D_TIM2 340   //主要用于电机控制的延时
+#define D_TIM3 500   //主要用于电机控制的延时
+
 uint8_t motor_Flag=0;
 uint8_t cmd[3]={3,0x3A,0x6B}; //发送获取电机标志位 地址 功能码 校验位
 uint8_t DIR[4]={0}; //用于存储电机方向
@@ -49,7 +52,7 @@ extern uint8_t Servo_Flag;
 //任务运动部分
 uint8_t Car_D=2;
 
-void Contral_Car(uint8_t Order,float Pos,uint32_t Angle,uint16_t V,uint8_t Acc)
+void Contral_Car(uint8_t Order,float Pos,uint32_t Angle,uint16_t V,uint8_t Acc,int D_TIM)
 {
 	int a=0;
 	MOTOR.P_DIR=DIR;
@@ -110,14 +113,14 @@ void Contral_Turn_Car(uint8_t Order,uint8_t Angle)
 	uint32_t ANGLE;
 	switch(Order)
 	{
-		case Turn_L:{ANGLE=44.2*Angle;Contral_Car(Turn_L,0,ANGLE,0,0);}break;
-		case Turn_L1:{ANGLE=44.5*Angle;Contral_Car(Turn_L,0,ANGLE,0,0);}break;
-		case Turn_L2:{ANGLE=43.7*Angle;Contral_Car(Turn_L,0,ANGLE,0,0);}break;
-		case Turn_L3:{ANGLE=44.1*Angle;Contral_Car(Turn_L,0,ANGLE,0,0);}break;
-		case Turn_R:{ANGLE=44.9*Angle;Contral_Car(Turn_R,0,ANGLE,0,0);}break;
-		case Turn_R1:{ANGLE=44.9*Angle;Contral_Car(Turn_R,0,ANGLE,0,0);}break;
-		case Turn_R2:{ANGLE=44.87*Angle;Contral_Car(Turn_R,0,ANGLE,0,0);}break;
-		case Turn_R3:{ANGLE=44.83*Angle;Contral_Car(Turn_R,0,ANGLE,0,0);}break;		
+		case Turn_L:Contral_Car(Turn_L,0,3930,0,0,D_TIM1);break;
+		case Turn_L1:Contral_Car(Turn_L,0,3880,0,0,D_TIM1);break;
+		case Turn_L2:Contral_Car(Turn_L,0,3945,0,0,D_TIM1);break;
+		case Turn_L3:Contral_Car(Turn_L,0,3955,0,0,D_TIM1);break;
+		case Turn_R:Contral_Car(Turn_R,0,3889,0,0,D_TIM1);break;
+		case Turn_R1:Contral_Car(Turn_R,0,3930,0,0,D_TIM1);break;
+		case Turn_R2:Contral_Car(Turn_R,0,3945,0,0,D_TIM1);break;
+		case Turn_R3:Contral_Car(Turn_R,0,3935,0,0,D_TIM1);break;		
 	}
 }
 
@@ -127,15 +130,15 @@ void Task_Catch_Work(uint8_t *Color_Order)
 	//调整车身的位置
 	if(Color_Data[2]<20)
 	{
-		Contral_Car(Left,0.07,0,380,100);		
+		Contral_Car(Left,0.07,0,380,100,D_TIM2);		
 	}
 	else if(Color_Data[2]>68)
 	{
-		Contral_Car(Right,0.2,0,380,100);
+		Contral_Car(Right,0.2,0,380,100,D_TIM2);
 	}
 	else if(Color_Data[2]>59&&Color_Data[2]<=68)
 	{
-		Contral_Car(Right,0.1,0,380,100);		
+		Contral_Car(Right,0.1,0,380,100,D_TIM2);		
 	}
 	for(int a=0;a<3;a++)
 	{
@@ -160,11 +163,11 @@ void Put(uint8_t *Color_Order)
 {
 	if(Ring_Data[1]<=65&&Ring_Data[1]>=61)
 	{
-		Contral_Car(Left,0.125,0,380,170);						
+		Contral_Car(Left,0.125,0,380,170,D_TIM2);						
 	}
 	else
 	{
-		Contral_Car(Left,0.1,0,380,170);		
+		Contral_Car(Left,0.1,0,380,170,D_TIM2);		
 	}	
 	for(int i=0;i<3;i++)
 	{
@@ -174,53 +177,184 @@ void Put(uint8_t *Color_Order)
 }
 
 //此函数主要用于服务放物块调整
+//void Car_Adjust(uint8_t Want_Postion)
+//{
+//	int Temp=0;
+//	if(Car_D==Want_Postion)
+//	{
+//		if(Ring_Data[1]<=65&&Ring_Data[1]>=61)
+//		{
+//			Contral_Car(Left,0.125,0,380,200,D_TIM2);						
+//		}
+//		else
+//		{
+//			Contral_Car(Left,0.1,0,380,200,D_TIM2);		
+//		}	
+//	}
+//	else
+//	{
+//		Temp=Car_D-Want_Postion;
+//		if(Temp>0)
+//		{
+//			Contral_Car(Back,0.592*Temp,0,380,100,D_TIM2);	
+//			Ring_Adjust();
+//			if(Ring_Data[1]<=65&&Ring_Data[1]>=61)
+//			{
+//				Contral_Car(Left,0.125,0,380,200,D_TIM2);						
+//			}
+//			else
+//			{
+//				Contral_Car(Left,0.1,0,380,200,D_TIM2);						
+//			}
+//		}
+//		else if(Temp<0)
+//		{
+//			Temp=-Temp;
+//			Contral_Car(Front,0.592*Temp,0,380,100,D_TIM2);
+//			Ring_Adjust();
+//			if(Ring_Data[1]<=65&&Ring_Data[1]>=61)
+//			{
+//				Contral_Car(Left,0.125,0,380,200,D_TIM2);						
+//			}
+//			else 
+//			{
+//				Contral_Car(Left,0.1,0,380,200,D_TIM2);						
+//			}
+//		}
+//	}
+//	Car_D=Want_Postion;
+//}
+
 void Car_Adjust(uint8_t Want_Postion)
 {
+	static int ban=1;
 	int Temp=0;
-	if(Car_D==Want_Postion)
+	if(ban==1)
 	{
-		if(Ring_Data[1]<=65&&Ring_Data[1]>=61)
+		if(Car_D==Want_Postion)
 		{
-			Contral_Car(Left,0.125,0,380,170);						
-		}
-		else
-		{
-			Contral_Car(Left,0.1,0,380,170);		
-		}	
-	}
-	else
-	{
-		Temp=Car_D-Want_Postion;
-		if(Temp>0)
-		{
-			Contral_Car(Back,0.592*Temp,0,380,100);	
-			Ring_Adjust();
 			if(Ring_Data[1]<=65&&Ring_Data[1]>=61)
 			{
-				Contral_Car(Left,0.125,0,380,170);						
+				Contral_Car(Left,0.121,0,340,130,D_TIM2);						
 			}
 			else
 			{
-				Contral_Car(Left,0.1,0,380,170);						
-			}
+				Contral_Car(Left,0.093,0,340,130,D_TIM2);		
+			}	
 		}
-		else if(Temp<0)
+		else
 		{
-			Temp=-Temp;
-			Contral_Car(Front,0.592*Temp,0,380,100);
-			Ring_Adjust();
-			if(Ring_Data[1]<=65&&Ring_Data[1]>=61)
+			Temp=Car_D-Want_Postion;
+			if(Temp>0)
 			{
-				Contral_Car(Left,0.125,0,380,170);						
+				Contral_Car(Back,0.592*Temp,0,380,100,D_TIM2);	
+				Ring_Adjust();
+				if(Ring_Data[1]<=65&&Ring_Data[1]>=61)
+				{
+					Contral_Car(Left,0.125,0,340,130,D_TIM2);						
+				}
+				else
+				{
+					Contral_Car(Left,0.1,0,340,130,D_TIM2);						
+				}
 			}
-			else 
+			else if(Temp<0)
 			{
-				Contral_Car(Left,0.1,0,380,170);						
+				Temp=-Temp;
+				Contral_Car(Front,0.592*Temp,0,380,100,D_TIM2);
+				Ring_Adjust();
+				if(Ring_Data[1]<=65&&Ring_Data[1]>=61)
+				{
+					Contral_Car(Left,0.125,0,340,130,D_TIM2);						
+				}
+				else 
+				{
+					Contral_Car(Left,0.1,0,340,130,D_TIM2);						
+				}
 			}
 		}
 	}
-	Car_D=Want_Postion;
+	else if(ban==2||ban==3)
+	{
+			Temp=Car_D-Want_Postion;
+			if(Temp>0)
+			{
+				if(Temp==1)
+				{
+					Contral_Car(Back,0.62,0,380,100,D_TIM2);					
+				}
+				else if(Temp==2)
+				{
+					Contral_Car(Back,1.19,0,380,100,D_TIM2);					
+				}
+			}
+			else if(Temp<0)
+			{
+				Temp=-Temp;
+				if(Temp==1)
+				{
+				Contral_Car(Front,0.6,0,380,100,D_TIM2);					
+				}
+				else if(Temp==2)
+				{
+				Contral_Car(Front,1.19,0,380,100,D_TIM2);					
+				}
+			}		
+	}
+	else if(ban==4)
+	{
+		if(Car_D==Want_Postion)
+		{
+			if(Ring_Data[1]<=65&&Ring_Data[1]>=61)
+			{
+				Contral_Car(Left,0.1,0,340,130,D_TIM2);						
+			}
+			else
+			{
+				Contral_Car(Left,0.08,0,340,130,D_TIM2);		
+			}	
+		}
+		else
+		{
+			Temp=Car_D-Want_Postion;
+			if(Temp>0)
+			{
+				Contral_Car(Back,0.592*Temp,0,380,100,D_TIM2);	
+				Ring_Adjust();
+				if(Ring_Data[1]<=65&&Ring_Data[1]>=61)
+				{
+					Contral_Car(Left,0.1,0,340,130,D_TIM2);						
+				}
+				else
+				{
+					Contral_Car(Left,0.08,0,340,130,D_TIM2);						
+				}
+			}
+			else if(Temp<0)
+			{
+				Temp=-Temp;
+				Contral_Car(Front,0.592*Temp,0,380,100,D_TIM2);
+				Ring_Adjust();
+				if(Ring_Data[1]<=65&&Ring_Data[1]>=61)
+				{
+					Contral_Car(Left,0.1,0,340,130,D_TIM2);						
+				}
+				else 
+				{
+					Contral_Car(Left,0.08,0,340,130,D_TIM2);						
+				}
+			}
+		}
+		
+	}
+	ban++;
+	if(ban>=5)
+	{
+		ban=1;
+	}
+	Car_D=Want_Postion;		
 }
+
 
 void LAST_Car_Adjust(uint8_t Want_Postion)
 {
@@ -232,17 +366,29 @@ void LAST_Car_Adjust(uint8_t Want_Postion)
 	else
 	{
 		Temp=Car_D-Want_Postion;
-		if(Temp>0)
-		{
-			Contral_Car(Back,0.592*Temp,0,380,100);	
-			Ring_Adjust();
-		}
-		else if(Temp<0)
-		{
-			Temp=-Temp;
-			Contral_Car(Front,0.592*Temp,0,380,100);
-			Ring_Adjust();
-		}
+			if(Temp>0)
+			{
+				if(Temp==1)
+				{
+					Contral_Car(Back,0.65,0,380,100,D_TIM2);					
+				}
+				else if(Temp==2)
+				{
+					Contral_Car(Back,1.2,0,380,100,D_TIM2);					
+				}
+			}
+			else if(Temp<0)
+			{
+				Temp=-Temp;
+				if(Temp==1)
+				{
+					Contral_Car(Front,0.65,0,380,100,D_TIM2);					
+				}
+				else if(Temp==2)
+				{
+					Contral_Car(Front,1.2,0,380,100,D_TIM2);					
+				}
+			}		
 	}
 	Car_D=Want_Postion;
 }
@@ -257,9 +403,30 @@ uint8_t PUT(uint8_t *Color_Order)
 		Car_Adjust(Color_Order[i]);
 	//放物块
 		runActionGroup(7+i,1);
-		runActionGroup(11,1);
+		runActionGroup(10,1);
 		runActionGroup(6,1);
-		Contral_Car(Right,0.17,0,380,170);							
+		if(i==2)
+		{
+			Contral_Car(Right,0.15,0,380,170,D_TIM2);										
+		}
+//		Contral_Car(Right,0.15,0,380,170,D_TIM2);							
+	}
+	Car_Adjust(2);
+}
+
+uint8_t PUT1(uint8_t *Color_Order)
+{	
+	for(int i=0;i<3;i++)
+	{
+	//走到对应的圆环之前
+		Car_Adjust(Color_Order[i]);
+		Delay_ms(200);
+		Contral_Car(Back,0.03,0,100,100,D_TIM2);									
+	//放物块
+		runActionGroup(7+i,1);
+		runActionGroup(10,1);
+		runActionGroup(6,1);
+		Contral_Car(Right,0.15,0,380,170,D_TIM2);							
 	}
 	Car_Adjust(2);
 }
@@ -272,19 +439,19 @@ uint8_t LAST_PUT(uint8_t *Color_Order)
 		LAST_Car_Adjust(Color_Order[i]);
 	//放物块
 		runActionGroup(7+i,1);
-		runActionGroup(19,1);
+		runActionGroup(17,1);
 		runActionGroup(6,1);
 	}
-	Contral_Car(Left,0.037,0,380,170);								
+	Contral_Car(Left,0.037,0,380,170,D_TIM2);								
 }
 
 //此函数为一次性抓三个
 void Catch(uint8_t *Color_Order)
 {
-	for(int i=0;i<3;i++) //13-15
+	for(int i=0;i<3;i++) 
 	{
-		runActionGroup(12+Color_Order[i],1);					
-		runActionGroup(16+i,1);
+		runActionGroup(10+Color_Order[i],1);					
+		runActionGroup(14+i,1);
 		runActionGroup(2,1);
 	}		
 }
@@ -301,8 +468,8 @@ void Ring_Adjust(void)
 		OpenMv_Part(See_Ring);
 		if(Ring_Data[1]==6)//表示没有成功识别到圆环
 		{
-			Contral_Car(Front,0.1,0,200,80);
-			Contral_Car(Right,0.09,0,200,80);																					
+			Contral_Car(Front,0.1,0,200,100,D_TIM2);
+			Contral_Car(Right,0.09,0,200,100,D_TIM2);																					
 			continue;	
 		}
 		//如果成功识别到圆环 则进行下面这些判断操作
@@ -317,35 +484,35 @@ void Ring_Adjust(void)
 			if(Ring_Data[0]<68&&Ring_Data[0]>20)
 			{
 				Temp1=0.3066-0.0041*Ring_Data[0];
-				Contral_Car(Back,Temp1,0,200,100);
+				Contral_Car(Back,Temp1,0,200,100,D_TIM2);
 			}
 			else if(Ring_Data[0]>82||Ring_Data[0]<=20)
 			{
-				Contral_Car(Front,0.1,0,200,100);				
+				Contral_Car(Front,0.1,0,200,100,D_TIM2);				
 			}
 			//调整y轴的位置
-			if(Ring_Data[1]<61&&Ring_Data[1]>45)
+			if(Ring_Data[1]<61&&Ring_Data[1]>30)
 			{				
 				if(Ring_Data[1]<61&&Ring_Data[1]>=53)//预防调整值过小避免卡死
 				{
-					Contral_Car(Left,0.02,0,200,100);														
+					Contral_Car(Left,0.02,0,200,100,D_TIM2);														
 				}
-				else if(Ring_Data[1]<53&&Ring_Data[1]>45)
+				else if(Ring_Data[1]<53&&Ring_Data[1]>30)
 				{
 					Temp2=0.364-0.0052*Ring_Data[1];
-					Contral_Car(Left,Temp2,0,200,100);									
+					Contral_Car(Left,Temp2,0,200,100,D_TIM2);									
 				}
 			}
 			else if(Ring_Data[1]<95&&Ring_Data[1]>73)
 			{
 				if(Ring_Data[1]>73&&Ring_Data[1]<80)//预防调整值过小避免卡死
 				{
-					Contral_Car(Right,0.04,0,200,100);																		
+					Contral_Car(Right,0.04,0,200,100,D_TIM2);																		
 				}
 				else if(Ring_Data[1]<95&&Ring_Data[1]>=80)
 				{
 					Temp2=0.0042*Ring_Data[1]-0.299;
-					Contral_Car(Right,Temp2,0,200,100);													
+					Contral_Car(Right,Temp2,0,200,100,D_TIM2);													
 				}
 			}
 		}
@@ -581,25 +748,23 @@ void Try(uint8_t num)
 //以下为比赛任务逻辑的调试部分
 void Run()
 {
-		Contral_Car(Left,0.95,0,100,130); 
-		Delay_ms(2000);
-		Contral_Car(Front,3.15,0,100,130); 	
+		Contral_Car(Left,0.95,0,110,130,D_TIM1); 
+		Contral_Car(Front,3.15,0,110,130,D_TIM1); 	
 		Try(2);
 		runActionGroup(2,1);
-		Contral_Car(Front,2.842,0,100,130);
-		Contral_Car(Right,0.43,0,100,130);
+		Contral_Car(Front,2.83,0,100,130,D_TIM1);
+		Contral_Car(Right,0.39,0,250,150,D_TIM1);
 		OpenMv_Part(See_Color);		
 		Task_Catch_Work(Order_Color_1);
 
-		Contral_Car(Left,0.4,0,100,130);
-		Contral_Car(Back,1.7,0,100,130);
+		Contral_Car(Left,0.4,0,250,150,D_TIM1);
+		Contral_Car(Back,1.62,0,100,130,D_TIM1);
 		Contral_Turn_Car(Turn_L,90);
-		Contral_Car(Front,7.1,0,100,70);
+		Contral_Car(Front,7.2,0,120,120,D_TIM1);
 		Contral_Turn_Car(Turn_L1,90);
-		Contral_Car(Right,0.1,0,450,170);
-	//抵达粗加工区
+	  //抵达粗加工区
 		runActionGroup(6,1);	
-		Delay_ms(1000);
+		Delay_ms(500);
 		Ring_Adjust();
 		//抓7-9按顺序抓取  放10-12放123
 		PUT(Order_Color_1);
@@ -609,36 +774,36 @@ void Run()
 		//抓13-15按顺序抓取 放16-18		
 		Catch(Order_Color_1);
 
-			Contral_Car(Left,0.3,0,100,130);
-			Contral_Car(Back,3.5,0,100,130);
-		Contral_Turn_Car(Turn_R,90);
-			Contral_Car(Back,3.28,0,100,130);
-			Contral_Car(Right,0.15,0,100,130);
+			Contral_Car(Left,0.3,0,250,150,D_TIM1);
+			Contral_Car(Back,3.5,0,130,130,D_TIM1);
+			Contral_Turn_Car(Turn_R,90);
+			Contral_Car(Back,3.32,0,130,130,D_TIM1);
+			Contral_Car(Right,0.35,0,250,150,D_TIM1);
 			runActionGroup(6,1);	
-			Delay_ms(1000);
+			Delay_ms(800);
 			Ring_Adjust();
 		//抓7-9按顺序抓取  放10-12放123
 		PUT(Order_Color_1);
 
 		runActionGroup(2,1);
 		
-			Contral_Car(Left,0.2,0,100,130);
-			Contral_Car(Back,3.65,0,100,10);
-		Contral_Turn_Car(Turn_R1,90);
-			Contral_Car(Back,1.86,0,100,100);
-			Contral_Car(Right,0.2,0,100,100);
+			Contral_Car(Left,0.3,0,250,150,D_TIM1);
+			Contral_Car(Back,3.68,0,140,140,D_TIM1);
+			Contral_Turn_Car(Turn_R1,90);
+			Contral_Car(Back,1.56,0,130,130,D_TIM1);
+			Contral_Car(Right,0.3,0,250,150,D_TIM1);
 			OpenMv_Part(See_Color);		
 			Task_Catch_Work(Order_Color_2);
 		
 /***************************第二遍*******************************************/
 
-		Contral_Car(Left,0.3,0,100,100);
-		Contral_Car(Back,1.65,0,100,100);
+		Contral_Car(Left,0.33,0,250,150,D_TIM1);
+		Contral_Car(Back,1.62,0,140,140,D_TIM1);
 		Contral_Turn_Car(Turn_L2,90);
-		Contral_Car(Front,7.34,0,100,70);
+		Contral_Car(Front,7.325,0,120,120,D_TIM1);
 		Contral_Turn_Car(Turn_L3,90);
 		runActionGroup(6,1);	
-		Delay_ms(1000);
+		Delay_ms(800);
 		Ring_Adjust();
 		//抓7-9按顺序抓取  放10-12放123
 		PUT(Order_Color_2);
@@ -648,21 +813,34 @@ void Run()
 		//抓13-15按顺序抓取 放16-18		
 		Catch(Order_Color_2);
 		
-			Contral_Car(Left,0.4,0,100,100);
-			Contral_Car(Back,3.5,0,100,100);
-		Contral_Turn_Car(Turn_R2,90);
-			Contral_Car(Back,3.3,0,100,100);
-			Contral_Car(Right,0.15,0,100,100);
+			Contral_Car(Left,0.4,0,250,150,D_TIM1);
+			Contral_Car(Back,3.5,0,140,140,D_TIM1);
+			Contral_Turn_Car(Turn_R2,90);
+			Contral_Car(Back,3.2,0,140,140,D_TIM1);
+			Contral_Car(Right,0.3,0,250,150,D_TIM1);
 			runActionGroup(6,1);	
-			Delay_ms(1000);
+			Delay_ms(800);
 			Ring_Adjust();
-//		//抓7-9按顺序抓取  放10-12放123
+
+		//抓7-9按顺序抓取  放10-12放123
 			LAST_PUT(Order_Color_2);
 					
-			Contral_Car(Left,0.3,0,100,100);
-			Contral_Car(Back,3.6+Car_D*0.15,0,250,150);
+			Contral_Car(Left,0.3,0,250,150,D_TIM1);
+			if(Car_D==1)
+			{
+				Contral_Car(Back,3.6,0,140,140,D_TIM3);				
+			}
+			else if(Car_D==2)
+			{
+				Contral_Car(Back,3.94,0,140,140,D_TIM3);								
+			}
+			else if(Car_D==3)
+			{
+				Contral_Car(Back,4.38,0,140,140,D_TIM3);								
+			}
+
 			Contral_Turn_Car(Turn_R3,90);
-			Contral_Car(Back,7.6,0,250,150);
-			Contral_Car(Right,0.6,0,100,100);
+			Contral_Car(Back,7.62,0,140,140,D_TIM3);
+			Contral_Car(Right,0.8,0,250,150,D_TIM1);
 		
 }

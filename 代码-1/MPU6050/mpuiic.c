@@ -161,20 +161,3 @@ u8 MPU_IIC_Read_Byte(unsigned char ack)
     return receive;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
